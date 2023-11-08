@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>员工管理</title>
+    <title>医生管理</title>
     <link href="../../../component/pear/css/pear.css" rel="stylesheet"/>
     <style>
         .expand.pear-btn:hover {
@@ -20,11 +20,11 @@
 <body class="pear-container">
 <div class="layui-card">
     <div class="layui-card-body">
-        <table id="user-table" lay-filter="user-table"></table>
+        <table id="doctor-table" lay-filter="doctor-table"></table>
     </div>
 </div>
 
-<script id="user-toolbar" type="text/html">
+<script id="doctor-toolbar" type="text/html">
     <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
         <i class="layui-icon layui-icon-add-1"></i>
         新增
@@ -36,43 +36,26 @@
 </script>
 
 <!-- 栏目操作 -->
-<!--<script id="user-bar" type="text/html">-->
-<!--    <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i-->
-<!--            class="layui-icon layui-icon-edit"></i></button>-->
-<!--    <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i-->
-<!--            class="layui-icon layui-icon-delete"></i></button>-->
-<!--    <button class="pear-btn pear-btn-sm" id="more_{{d.userId}}"><i class="layui-icon layui-icon-triangle-d"></i>-->
-<!--    </button>-->
-<!--</script>-->
+<script id="user-bar" type="text/html">
+    <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i
+            class="layui-icon layui-icon-edit"></i></button>
+    <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i
+            class="layui-icon layui-icon-delete"></i></button>
+    <button class="pear-btn pear-btn-sm" id="more_{{d.id}}"><i class="layui-icon layui-icon-triangle-d"></i>
+    </button>
+</script>
 
-<!--开启关闭按钮-->
-<!--<script id="user-enable" type="text/html">-->
-<!--    <input type="checkbox" name="enable" value="{{d.id}}" lay-skin="switch" lay-text="启用|禁用"-->
-<!--           lay-filter="user-enable"-->
-<!--           checked="{{ d.enable == 0 ? 'true' : 'false' }}">-->
-<!--</script>-->
+<script id="doctor-gender" type="text/html">
+    {{#if (d.gender == 1) { }}
+    <span>男</span>
+    {{# }else if(d.gender == 0){ }}
+    <span>女</span>
+    {{# } }}
+</script>
 
-<!--int转string切换显示-->
-<!--<script id="user-sex" type="text/html">-->
-<!--    {{#if (d.sex == 1) { }}-->
-<!--    <span>男</span>-->
-<!--    {{# }else if(d.sex == 2){ }}-->
-<!--    <span>女</span>-->
-<!--    {{# } }}-->
-<!--</script>-->
-
-<!--int转string切换显示-->
-<!--<script id="user-login" type="text/html">-->
-<!--    {{#if (d.login == 0) { }}-->
-<!--    <span>在线</span>-->
-<!--    {{# }else if(d.sex == 1){ }}-->
-<!--    <span>离线</span>-->
-<!--    {{# } }}-->
-<!--</script>-->
-
-时间戳转换
-<script id="user-createTime" type="text/html">
-    {{layui.util.toDateString(d.createTime, 'yyyy-MM-dd')}}
+<!--时间戳转换-->
+<script id="doctor-employmentDate" type="text/html">
+    {{layui.util.toDateString(d.employmentDate, 'yyyy-MM-dd')}}
 </script>
 
 <div style="display: none;">
@@ -85,14 +68,15 @@
 <script src="../../../component/layui/layui.js"></script>
 <script src="../../../component/pear/pear.js"></script>
 <script>
-    layui.use(['table', 'form', 'jquery', 'drawer', 'dropdown'], function () {
+    layui.use(['table', 'form', 'jquery', 'drawer', 'dropdown', 'common'], function () {
         let table = layui.table;
         let form = layui.form;
         let $ = layui.jquery;
         let drawer = layui.drawer;
         let dropdown = layui.dropdown;
+        let common = layui.common;
 
-        let MODULE_PATH = "/system/user/";
+        let MODULE_PATH = "";
 
         // 表格样式
         let cols = [
@@ -100,22 +84,30 @@
                 type: 'checkbox'
             },
                 {
-                    title: '账号',
-                    field: 'username',
+                    title: 'ID',
+                    field: 'id',
                     align: 'center',
-                    width: 100
+                },
+                {
+                    title: '医生编号',
+                    field: 'doctorNumber',
+                    align: 'center',
                 },
                 {
                     title: '姓名',
-                    field: 'realName',
+                    field: 'name',
                     align: 'center'
                 },
                 {
                     title: '性别',
-                    field: 'sex',
+                    field: 'gender',
                     align: 'center',
-                    width: 80,
-                    templet: '#user-sex'
+                    templet: '#doctor-gender'
+                },
+                {
+                    title: '年龄',
+                    field: 'age',
+                    align: 'center'
                 },
                 {
                     title: '电话',
@@ -123,22 +115,25 @@
                     align: 'center'
                 },
                 {
-                    title: '启用',
-                    field: 'enable',
-                    align: 'center',
-                    templet: '#user-enable'
+                    title: '职位',
+                    field: 'position',
+                    align: 'center'
                 },
                 {
-                    title: '登录',
-                    field: 'login',
-                    align: 'center',
-                    templet: '#user-login'
+                    title: '薪水',
+                    field: 'salary',
+                    align: 'center'
                 },
                 {
-                    title: '注册',
-                    field: 'createTime',
+                    title: '入职时间',
+                    field: 'employmentDate',
                     align: 'center',
-                    templet: '#user-createTime'
+                    templet: '#doctor-employmentDate'
+                },
+                {
+                    title: '个人介绍',
+                    field: 'notes',
+                    align: 'center',
                 },
                 {
                     title: '操作',
@@ -151,20 +146,20 @@
         ]
 
         table.render({
-            elem: '#user-table',
-            url: '../../../admin/data/table.json',
-            page: true,
+            elem: '#doctor-table',
+            url: 'http://localhost:18888/doctor/list',
+            page: false,
             cols: cols,
             skin: 'line',
-            toolbar: '#user-toolbar',
+            toolbar: '#doctor-toolbar',
             defaultToolbar: [{
                 layEvent: 'refresh',
                 icon: 'layui-icon-refresh',
-            }, 'filter', 'print', 'exports'],
+            }, 'filter', 'exports'],
             done: function (res, curr, count) {
                 for (var i = 0; i < res.data.length; i++) {
                     dropdown.render({
-                        elem: '#more_' + res.data[i].userId,
+                        elem: '#more_' + res.data[i].id,
                         data: [{
                             title: 'menu item11',
                             id: 100
@@ -186,7 +181,7 @@
             }
         });
 
-        table.on('tool(user-table)', function (obj) {
+        table.on('tool(doctor-table)', function (obj) {
             if (obj.event === 'remove') {
                 window.remove(obj);
             } else if (obj.event === 'edit') {
@@ -194,7 +189,7 @@
             }
         });
 
-        table.on('toolbar(user-table)', function (obj) {
+        table.on('toolbar(doctor-table)', function (obj) {
             if (obj.event === 'add') {
                 window.add();
             } else if (obj.event === 'refresh') {
@@ -204,42 +199,47 @@
             }
         });
 
-        // 开关提示信息
-        // form.on('switch(user-enable)', function (obj) {
-        //     layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
-        // });
-
         window.add = function () {
-            drawer.open({
-                direction: "top",
-                dom: ".layer-top",
-                distance: "30%"
+            layer.open({
+                type: 2,
+                title: '新增',
+                shade: 0.1,
+                area: [common.isModile() ? '100%' : '500px', common.isModile() ? '100%' : '400px'],
+                content: MODULE_PATH + 'add.html'
             });
         }
 
         window.edit = function (obj) {
-            layer.msg("修改");
+            layer.open({
+                type: 2,
+                title: '修改',
+                shade: 0.1,
+                area: ['500px', '400px'],
+                content: MODULE_PATH + 'edit.html' + "?id=" + obj.data['id']
+            });
         }
 
         window.remove = function (obj) {
-            layer.confirm('确定要删除该用户', {
+            layer.confirm('确定要删除这位医生？', {
                 icon: 3,
-                title: '提示'
+                title: '确认删除'
             }, function (index) {
                 layer.close(index);
                 let loading = layer.load();
                 $.ajax({
-                    url: MODULE_PATH + "remove/" + obj.data['userId'],
+                    url: "http://localhost:18888/doctor/delete?id=" + obj.data['id'],
                     dataType: 'json',
-                    type: 'delete',
+                    type: 'GET',
                     success: function (result) {
                         layer.close(loading);
-                        if (result.success) {
+                        console.log();
+                        if (result.code === 0) {
                             layer.msg(result.msg, {
                                 icon: 1,
                                 time: 1000
                             }, function () {
                                 obj.del();
+                                table.reload('doctor-table');
                             });
                         } else {
                             layer.msg(result.msg, {
@@ -266,24 +266,24 @@
                 ids += data[i].userId + ",";
             }
             ids = ids.substr(0, ids.length - 1);
-            layer.confirm('确定要删除这些用户', {
+            layer.confirm('确定要删除这些医生？', {
                 icon: 3,
-                title: '提示'
+                title: '确认删除'
             }, function (index) {
                 layer.close(index);
                 let loading = layer.load();
                 $.ajax({
                     url: MODULE_PATH + "batchRemove/" + ids,
                     dataType: 'json',
-                    type: 'delete',
+                    type: 'GET',
                     success: function (result) {
                         layer.close(loading);
-                        if (result.success) {
+                        if (result.code === 0) {
                             layer.msg(result.msg, {
                                 icon: 1,
                                 time: 1000
                             }, function () {
-                                table.reload('user-table');
+                                table.reload('doctor-table');
                             });
                         } else {
                             layer.msg(result.msg, {
@@ -297,7 +297,7 @@
         }
 
         window.refresh = function (param) {
-            table.reload('user-table');
+            table.reload('doctor-table');
         }
     })
 </script>

@@ -25,7 +25,7 @@ public class DoctorController {
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public Result add(Doctor line) {//1.接收参数
+    public Result add(Doctor line) {
         doctorService.insertDoctor(line);
         return Result.buildSuccess();
     }

@@ -11,8 +11,7 @@ public class MyDateConverter implements Converter<String, Date> {
     public Date convert(String source) {
         try {
             SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd");
-            Date date = df.parse(source);
-            return date;
+            return df.parse(source);
         } catch (ParseException e) {
             e.printStackTrace();
             throw new RuntimeException("日期转换失败!");
