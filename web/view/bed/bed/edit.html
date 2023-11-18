@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>病床修改</title>
+    <link rel="stylesheet" href="../../../component/pear/css/pear.css" />
+</head>
+<body>
+<form class="layui-form" lay-filter="layItem"-f action="">
+    <div class="mainBox">
+        <div class="main-container">
+
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">病床号</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="bedNumber" lay-verify="title" autocomplete="off" placeholder="" class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">房间号</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="roomNumber" lay-verify="title" autocomplete="off" placeholder="" class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">病床状态</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="bedState" value="1" title="占用" checked>
+                    <input type="radio" name="bedState" value="0" title="未占用">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">操作日期</label>
+                    <div class="layui-input-block">
+                        <input id="test1" type="text" name="putDate" lay-verify="title" autocomplete="off" placeholder="" class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="button-container">
+            <button type="submit" class="layui-btn layui-btn-normal layui-btn-sm" lay-submit="" lay-filter="user-save">
+                <i class="layui-icon layui-icon-ok"></i>
+                提交
+            </button>
+            <button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">
+                <i class="layui-icon layui-icon-refresh"></i>
+                重置
+            </button>
+        </div>
+    </div>
+</form>
+<script src="../../../component/layui/layui.js"></script>
+<script src="../../../component/pear/pear.js"></script>
+<script>
+
+    //获取url后面携带的参数
+    function getQueryVariable(variable) {
+        let query = window.location.search.substring(1);
+        let vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=");
+            if (pair[0] == variable) {
+                return pair[1];
+            }
+        }
+        return null;
+    }
+    let id=getQueryVariable("id");
+
+    layui.use(['form','jquery','upload','laydate'],function(){
+        let form = layui.form;
+        let $ = layui.jquery;
+        let upload = layui.upload;
+
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#test1' //指定元素
+            ,trigger: 'click'
+        });
+
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = ('0' + (date.getMonth() + 1)).slice(-2);
+            const day = ('0' + date.getDate()).slice(-2);
+            return `${year}-${month}-${day}`;
+        }
+
+
+
+
+
+
+        //回显数据
+        $.ajax({
+            url:`http://localhost:${myPort}/bed/find?id=`+id,
+            method:"GET",
+            success:function(obj){
+
+                let data=obj.data;
+
+
+
+
+                //layui表单赋值回显
+                form.val("layItem", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                    roomNumber:data.roomNumber,
+                    bedNumber:data.bedNumber,
+                    bedState:data.bedState,
+                    putDate:formatDate(new Date(data.putDate))
+                });
+
+            }
+        });
+
+        form.on('submit(user-save)', function(data){
+
+            //修改携带id
+            data.field.id=id;
+
+
+            $.ajax({
+                url:`http://localhost:${myPort}/bed/update`,
+                data:data.field,
+                type:'post',
+                success:function(result){
+                    if(result.code===0){
+                        layer.msg(result.msg,{icon:1,time:1000},function(){
+                            parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
+                            window.parent.location.reload()
+                        });
+                    }else{
+                        layer.msg(result.msg,{icon:2,time:1000});
+                    }
+                }
+            })
+            return false;
+        });
+    })
+</script>
+<script>
+</script>
+</body>
+</html>

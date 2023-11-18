@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.xhu.mapper.StateMapper">
+    <!--插入-->
+    <!--id写对应接口名称-->
+    <!--parameterType 输入参数的类型-->
+
+    <insert id="insertState" parameterType="com.edu.xhu.pojo.entity.State">
+        insert into state(name,now,live,medication,un_effect,sleep)
+            values (#{name},#{now},#{live},#{medication},#{unEffect},#{sleep})
+    </insert>
+    
+    <delete id="deleteStateById" parameterType="Long">
+        delete from state where id=#{id}
+    </delete>
+
+    <update id="updateState" parameterType="com.edu.xhu.pojo.entity.State">
+        update state set name=#{name},now=#{now},live=#{live},medication=#{medication},un_effect=#{unEffect},sleep=#{sleep}
+            where id=#{id}
+    </update>
+
+    <update id="updateStateNow" parameterType="com.edu.xhu.pojo.entity.State">
+        update state set now=#{now}
+            where id=#{id}
+    </update>
+
+    <select id="findStateById" parameterType="Long" resultType="com.edu.xhu.pojo.entity.State">
+        select id,name,now,live,medication,un_effect,sleep
+            from state
+        where id=#{id}
+    </select>
+
+    <select id="findStateByPage" parameterType="com.edu.xhu.pojo.dao.dto.StateQueryDto" resultType="com.edu.xhu.pojo.entity.State">
+        select
+            id,name,now,live,medication,un_effect,sleep
+        from
+        state
+
+        <where>
+
+            <if test="name!=null and name!=''">
+                name like '%${name}%'
+            </if>
+            <if test="now!=null">
+                and now = #{now}
+            </if>
+
+        </where>
+        limit #{startIndex},#{limit}
+
+    </select>
+
+    <select id="findStateByPageCount" parameterType="com.edu.xhu.pojo.dao.dto.StateQueryDto" resultType="Long">
+        select
+        count(*)
+        from
+        state
+        <where>
+
+            <if test="name!=null and name!=''">
+                name like '%${name}%'
+            </if>
+            <if test="now!=null">
+                and now=#{now}
+            </if>
+
+        </where>
+
+    </select>
+
+</mapper>

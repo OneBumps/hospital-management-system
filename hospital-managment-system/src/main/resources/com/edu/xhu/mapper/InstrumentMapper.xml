@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.xhu.mapper.InstrumentMapper">
+
+    <resultMap id="BaseResultMap" type="com.edu.xhu.pojo.entity.Instrument">
+            <id property="id" column="id" jdbcType="VARCHAR"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="price" column="price" jdbcType="DOUBLE"/>
+            <result property="year" column="year" jdbcType="INTEGER"/>
+            <result property="model" column="model" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,price,
+        year,model
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from instrument
+        where  id = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from instrument
+        where  id = #{id,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.edu.xhu.pojo.entity.Instrument" useGeneratedKeys="true">
+        insert into instrument
+        ( id,name,price
+        ,year,model)
+        values (#{id,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{price,jdbcType=DOUBLE}
+        ,#{year,jdbcType=INTEGER},#{model,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.edu.xhu.pojo.entity.Instrument" useGeneratedKeys="true">
+        insert into instrument
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>
+                <if test="name != null">name,</if>
+                <if test="price != null">price,</if>
+                <if test="year != null">year,</if>
+                <if test="model != null">model,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">#{id,jdbcType=VARCHAR},</if>
+                <if test="name != null">#{name,jdbcType=VARCHAR},</if>
+                <if test="price != null">#{price,jdbcType=DOUBLE},</if>
+                <if test="year != null">#{year,jdbcType=INTEGER},</if>
+                <if test="model != null">#{model,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.edu.xhu.pojo.entity.Instrument">
+        update instrument
+        <set>
+                <if test="name != null">
+                    name = #{name,jdbcType=VARCHAR},
+                </if>
+                <if test="price != null">
+                    price = #{price,jdbcType=DOUBLE},
+                </if>
+                <if test="year != null">
+                    year = #{year,jdbcType=INTEGER},
+                </if>
+                <if test="model != null">
+                    model = #{model,jdbcType=VARCHAR},
+                </if>
+        </set>
+        where   id = #{id,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.edu.xhu.pojo.entity.Instrument">
+        update instrument
+        set
+            name =  #{name,jdbcType=VARCHAR},
+            price =  #{price,jdbcType=DOUBLE},
+            year =  #{year,jdbcType=INTEGER},
+            model =  #{model,jdbcType=VARCHAR}
+        where   id = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <select id="findInstrumentAll" resultType="com.edu.xhu.pojo.entity.Instrument">
+        select *from instrument;
+    </select>
+    <select id="findInstrumentByPage" parameterType="com.edu.xhu.pojo.dao.dto.InstrumentQueryDto"
+            resultType="com.edu.xhu.pojo.entity.Instrument">
+        select *from instrument
+                <where>
+                    <if test="name!=null"></if>
+                    name like '%${name}%'
+                </where>
+                  limit #{startIndex},#{limit}
+    </select>
+    <select id="findInstrumentCount" parameterType="com.edu.xhu.pojo.dao.dto.InstrumentQueryDto" resultType="long">
+        select count(*)from instrument
+        <where>
+            <if test="name!=null"></if>
+            name like '%${name}%'
+        </where>
+    </select>
+</mapper>

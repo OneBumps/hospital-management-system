@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace一般定义为 包名+类名 -->
+<mapper namespace="com.edu.xhu.mapper.RoomMapper">
+    <insert id="insertRoom" parameterType="com.edu.xhu.pojo.entity.Room">
+        insert  into room(room_number,room_name,build_name,floor,room_state,notes,put_date)
+        values(#{roomNumber},#{roomName},#{buildName},#{floor},#{roomState},#{notes},#{putDate})
+    </insert>
+    <select id="findRoomAll" resultType="com.edu.xhu.pojo.entity.Room">
+        select id,room_number,room_name,build_name,floor,room_state,notes,put_date from room
+    </select>
+    <select id="findRoomById" parameterType="long" resultType="com.edu.xhu.pojo.entity.Room">
+        select id,room_number,room_name,build_name,floor,room_state,notes,put_date from room where id=#{id}
+    </select>
+    <delete id="deleteRoomById" parameterType="long">
+        delete from room where id=#{id}
+    </delete>
+    <update id="updateRoomById" parameterType="com.edu.xhu.mapper.RoomMapper">
+        update room set room_number=#{roomNumber},room_name=#{roomName},build_name=#{buildName},
+                        floor=#{floor},room_state=#{roomState},notes=#{notes},put_date=#{putDate}
+        where id=#{id}
+    </update>
+    <update id="updateRoomState" parameterType="com.edu.xhu.pojo.entity.Room">
+        update room set room_state=#{roomState} where id=#{id}
+    </update>
+    <select id="findRoomByPage" parameterType="com.edu.xhu.pojo.dao.dto.RoomQueryDto" resultType="com.edu.xhu.pojo.entity.Room">
+        select id,room_number,room_name,build_name,floor,room_state,notes,put_date from room
+        <where>
+            <if test="roomNumber!=null and roomNumber!=''">
+                room_number=#{roomNumber}
+            </if>
+            <if test="roomName!=null and roomName!=''">
+                and room_name LIKE '%${roomName}%'
+            </if>
+            <if test="roomState!=null and roomState!=''">
+                and room_state=#{roomState}
+            </if>
+
+        </where>
+        LIMIT #{startIndex},#{limit}
+    </select>
+    <!--$ 拼接，不会加上单引号  #{}会加上单引号-->
+    <!--if标签 动态sql 判断是否符合条件  符合再加上对应的sql-->
+    <select id="findRoomByPageCount" parameterType="com.edu.xhu.pojo.dao.dto.RoomQueryDto" resultType="Long">
+        select count(*) from room
+        <where>
+            <if test="roomNumber!=null and roomNumber!=''">
+                room_number=#{roomNumber}
+            </if>
+            <if test="roomName!=null and roomName!=''">
+                and room_name LIKE '%${roomName}%'
+            </if>
+            <if test="roomState!=null">
+                and room_state=#{roomState}
+            </if>
+        </where>
+    </select>
+</mapper>

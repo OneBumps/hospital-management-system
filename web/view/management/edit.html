@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>修改页面</title>
+    <link href="../../component/pear/css/pear.css" rel="stylesheet"/>
+</head>
+<body>
+<form action="" class="layui-form" lay-filter="layItem">
+    <div class="mainBox">
+        <div class="main-container">
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="name"
+                           type="text">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">等级</label>
+                <div class="layui-input-block">
+                    <input checked name="grade" title="普通员工" type="radio" value="0">
+                    <input name="grade" title="管理员" type="radio" value="1">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">职责描述</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="description" name="description"
+                           type="text">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="button-container">
+            <button class="pear-btn pear-btn-primary pear-btn-sm" lay-filter="user-save" lay-submit=""
+                    type="submit">
+                <i class="layui-icon layui-icon-ok"></i>
+                提交
+            </button>
+            <button class="pear-btn pear-btn-sm" type="reset">
+                <i class="layui-icon layui-icon-refresh"></i>
+                重置
+            </button>
+        </div>
+    </div>
+</form>
+
+
+<script src="../../component/layui/layui.js"></script>
+<script src="../../component/pear/pear.js"></script>
+<script>
+    layui.use(['form', 'jquery', 'upload', 'laydate'], function () {
+        let form = layui.form;
+        let $ = layui.jquery;
+        let laydate = layui.laydate;
+        laydate.render({
+            elem: '#timeSelect'
+            , trigger: 'click'
+        });
+
+        function getQueryVariable(variable) {
+            let query = window.location.search.substring(1);
+            let vars = query.split("&");
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split("=");
+                if (pair[0] == variable) {
+                    return pair[1];
+                }
+            }
+            return null;
+        }
+
+        let id = getQueryVariable("id");
+
+
+        //回显数据
+        var department;
+        $.ajax({
+            url: `http://localhost:${myPort}/management/find?id=` + id,
+            method: "GET",
+            success: function (obj) {
+                let data = obj.data;
+                //layui表单赋值回显
+                form.val("layItem", {
+                    name: data.name,
+                    grade: data.grade,
+                    description: data.description
+                });
+            }
+        });
+
+        form.on('submit(user-save)', function (data) {
+            data.field.id = id;
+            $.ajax({
+                url: `http://localhost:${myPort}/management/update`,
+                data: data.field,
+                dataType: 'json',
+                type: 'post',
+                success: function (result) {
+                    if (result.code === 0) {
+                        layer.msg(result.msg, {
+                            icon: 1,
+                            time: 1000
+                        }, function () {
+                            parent.layer.close(parent.layer.getFrameIndex(window
+                                .name)); //关闭当前页
+                            parent.layui.table.reload("doctor-table");
+                        });
+                    } else {
+                        layer.msg(result.msg, {
+                            icon: 2,
+                            time: 1000
+                        });
+                    }
+                }
+            })
+            return false;
+        });
+    })
+</script>
+<script>
+</script>
+</body>
+</html>

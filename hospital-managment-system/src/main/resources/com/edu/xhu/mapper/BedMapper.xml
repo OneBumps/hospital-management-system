@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace一般定义为 包名+类名 -->
+<mapper namespace="com.edu.xhu.mapper.BedMapper">
+    <!--插入-->
+    <!--id写对应接口的方法名称-->
+    <!--输入参数的类型-->
+    <!--#{} 填写pojo对应的属性名-->
+    <insert id="insertBed" parameterType="com.edu.xhu.pojo.entity.Bed">
+    insert into bed(bed_number,room_number,bed_state,put_date)
+    values(#{bedNumber},#{roomNumber},#{bedState},#{putDate})
+    </insert>
+
+    <select id="findBedAll" resultType="com.edu.xhu.pojo.entity.Bed" >
+select id ,bed_number,room_number,bed_state,put_date from bed
+    </select>
+    <select id="findBedById" parameterType="long" resultType="com.edu.xhu.pojo.entity.Bed">
+        select  id,bed_number,room_number,bed_state,put_date from bed where id=#{id}
+    </select>
+
+    <select id="findBedByBen" parameterType="string" resultType="com.edu.xhu.pojo.entity.Bed">
+        select id,bed_number,room_number,bed_state,put_date from bed
+        where bed_number=#{bedNumber}
+
+    </select>
+
+    <select id="findBedByRon" parameterType="string" resultType="com.edu.xhu.pojo.entity.Bed">
+        select id,bed_number,room_number,bed_state,put_date from bed
+        where room_number=#{roomNumber}
+
+    </select>
+    <delete id="deleteBedById" parameterType="long">
+delete from bed where id=#{id}
+    </delete>
+
+    <update id="updateBedById" parameterType="com.edu.xhu.mapper.BedMapper">
+update bed set bed_number=#{bedNumber},room_number=#{roomNumber},bed_state=#{bedState},put_date=#{putDate} where id=#{id}
+    </update>
+
+
+    <update id="updateBedState" parameterType="com.edu.xhu.pojo.entity.Bed">
+        update bed set bed_state=#{bedState} where id=#{id}
+    </update>
+
+    <select id="findBedByPage" parameterType="com.edu.xhu.pojo.dao.dto.BedQueryDto" resultType="com.edu.xhu.pojo.entity.Bed">
+        SELECT
+       id, bed_number,room_number,bed_state,put_date from bed
+        <where>
+            <if test="bedNumber!=null and bedNumber!=''">
+                bed_number = #{bedNumber}
+            </if>
+            <if test="roomNumber!=null and roomNumber!=''">
+              and  room_number = #{roomNumber}
+            </if>
+            <if test="bedState!=null">
+                and bed_state = #{bedState}
+            </if>
+        </where>
+        LIMIT #{startIndex},#{limit}
+
+    </select>
+
+    <!--$ 拼接，不会加上单引号  #{}会加上单引号-->
+    <!--if标签 动态sql 判断是否符合条件  符合再加上对应的sql-->
+    <select id="findBedByPageCount" parameterType="com.edu.xhu.pojo.dao.dto.BedQueryDto" resultType="long">
+        SELECT
+        count(*)
+        FROM
+        bed
+        <where>
+            <if test="bedNumber!=null and bedNumber!=''">
+                bed_number = #{bedNumber}
+            </if>
+            <if test="roomNumber!=null and roomNumber!=''">
+               and room_number = #{roomNumber}
+            </if>
+            <if test="bedState!=null">
+                and bed_state = #{bedState}
+            </if>
+        </where>
+
+    </select>
+</mapper>

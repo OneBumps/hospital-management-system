@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>管理员列表</title>
+    <link href="../../component/pear/css/pear.css" rel="stylesheet"/>
+    <style>
+        .expand.pear-btn:hover {
+            color: currentColor;
+            background: none;
+        }
+
+        .expand.pear-btn {
+            border: 1px solid rgba(255, 255, 255, 0)
+        }
+    </style>
+</head>
+
+<body class="pear-container">
+<!-- 查询栏 -->
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form action="" class="layui-form" id="managementForm">
+            <div class="layui-form-item">
+                <div class="layui-form-item layui-inline">
+                    <label class="layui-form-label">姓名</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" name="name" placeholder="" type="text">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                    <label class="layui-form-label">等级</label>
+                    <div class="layui-input-inline">
+                        <label>
+                            <select name="grade">
+                                <option value="">全部</option>
+                                <option value="0">普通员工</option>
+                                <option value="1">管理员</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                    <label class="layui-form-label">启用状态</label>
+                    <div class="layui-input-inline">
+                        <label>
+                            <select name="open">
+                                <option value="">全部</option>
+                                <option value="0">已禁用</option>
+                                <option value="1">已启用</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-inline">
+                    <button class="pear-btn pear-btn-md pear-btn-primary" lay-filter="doctor-query" lay-submit>
+                        <i class="layui-icon layui-icon-search"></i>
+                        查询
+                    </button>
+                    <button class="pear-btn pear-btn-md" type="reset">
+                        <i class="layui-icon layui-icon-refresh"></i>
+                        重置
+                    </button>
+                    <button class="pear-btn pear-btn-md expand" type="button">
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- 表格 -->
+<div class="layui-card">
+    <div class="layui-card-body">
+        <table id="doctor-table" lay-filter="doctor-table"></table>
+    </div>
+</div>
+<!-- 顶部操作栏 -->
+<script id="doctor-toolbar" type="text/html">
+    <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
+        <i class="layui-icon layui-icon-add-1"></i>
+        新增
+    </button>
+</script>
+
+<!-- 启用/禁用设置 -->
+<script id="user-enable" type="text/html">
+    <input type="checkbox" name="open" value="{{d.id}}" lay-skin="switch" lay-text="启用|禁用"
+           lay-filter="user-enable" {{ d.open==1?'checked':''}} />
+</script>
+
+<!-- 栏目操作 -->
+<script id="user-bar" type="text/html">
+    <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i
+            class="layui-icon layui-icon-edit"></i></button>
+    <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i
+            class="layui-icon layui-icon-delete"></i></button>
+    </button>
+</script>
+
+
+<script src="../../component/layui/layui.js"></script>
+<script src="../../component/pear/pear.js"></script>
+<script>
+    layui.use(['table', 'form', 'jquery', 'drawer', 'dropdown', 'common'], function () {
+        let table = layui.table;
+        let form = layui.form;
+        let $ = layui.jquery;
+        let drawer = layui.drawer;
+        let dropdown = layui.dropdown;
+        let common = layui.common;
+
+        let MODULE_PATH = "";
+        // 表格样式
+        let cols = [
+            [
+                {
+                    title: 'ID',
+                    field: 'id',
+                    align: 'center',
+                },
+                {
+                    title: '姓名',
+                    field: 'name',
+                    align: 'center',
+                },
+                {
+                    title: '等级',
+                    field: 'grade',
+                    align: 'center',
+                    templet: function (d) {
+                        let grade = d.grade
+                        if (grade === 1) return "管理员";
+                        else return "普通员工";
+                    }
+                },
+                {
+                    title: '职责描述',
+                    field: 'description',
+                    align: 'center',
+                },
+                {
+                    title: '是否启用',
+                    field: 'open',
+                    align: 'center',
+                    templet: '#user-enable'
+                },
+                {
+                    title: '操作',
+                    toolbar: '#user-bar',
+                    align: 'left',
+                    fixed: 'right'
+                }
+            ]
+        ]
+
+        table.render({
+            elem: '#doctor-table',
+            url: `http://localhost:${myPort}/management/list`,
+            page: true,
+            cols: cols,
+            skin: 'row',
+            toolbar: '#doctor-toolbar',
+            defaultToolbar: [{
+                layEvent: 'refresh',
+                icon: 'layui-icon-refresh',
+            }, 'filter', 'exports'],
+            limits: [10, 15, 20, 30, 50, 70, 100],
+        });
+
+        form.on('submit(doctor-query)', function (data) {
+            table.reload('doctor-table', {where: data.field})
+            return false;
+        });
+
+        table.on('tool(doctor-table)', function (obj) {
+            if (obj.event === 'remove') {
+                window.remove(obj);
+            } else if (obj.event === 'edit') {
+                window.edit(obj);
+            }
+        });
+
+        table.on('toolbar(doctor-table)', function (obj) {
+            if (obj.event === 'add') {
+                window.add();
+            } else if (obj.event === 'refresh') {
+                window.refresh();
+            } else if (obj.event === 'batchRemove') {
+                window.batchRemove(obj);
+            }
+        });
+
+        // 启用状态操作
+        form.on('switch(user-enable)', function(obj) {
+            let loading = layer.load();
+            $.ajax({
+                url: `http://localhost:${myPort}/management/enable?id=` + this.value,
+                dataType: 'json',
+                type: 'GET',
+                success: function (result) {
+                    layer.close(loading);
+                    if (result.code === 0) {
+                        layer.msg(result.msg, {
+                            icon: 1,
+                            time: 1000
+                        }, function () {
+                            layer.tips('修改成功')
+                        });
+                    } else {
+                        layer.msg(result.msg, {
+                            icon: 2,
+                            time: 1000
+                        });
+                    }
+                }
+            })
+        });
+
+        window.add = function () {
+            layer.open({
+                type: 2,
+                title: '新增',
+                shade: 0.1,
+                area: [common.isModile() ? '100%' : '500px', common.isModile() ? '100%' : '350px'],
+                content: MODULE_PATH + 'add.html'
+            });
+        }
+
+        window.edit = function (obj) {
+            layer.open({
+                type: 2,
+                title: '修改',
+                shade: 0.1,
+                area: ['500px', '350px'],
+                content: MODULE_PATH + 'edit.html' + "?id=" + obj.data['id']
+            });
+        }
+
+        window.remove = function (obj) {
+            layer.confirm('确定要删除这位员工？', {
+                icon: 3,
+                title: '确认删除'
+            }, function (index) {
+                layer.close(index);
+                let loading = layer.load();
+                $.ajax({
+                    url: `http://localhost:${myPort}/management/delete?id=` + obj.data['id'],
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (result) {
+                        layer.close(loading);
+                        console.log();
+                        if (result.code === 0) {
+                            layer.msg(result.msg, {
+                                icon: 1,
+                                time: 1000
+                            }, function () {
+                                obj.del();
+                                table.reload('doctor-table');
+                            });
+                        } else {
+                            layer.msg(result.msg, {
+                                icon: 2,
+                                time: 1000
+                            });
+                        }
+                    }
+                })
+            });
+        }
+
+
+        window.refresh = function (param) {
+            table.reload('doctor-table');
+        }
+    })
+</script>
+</body>
+
+</html>

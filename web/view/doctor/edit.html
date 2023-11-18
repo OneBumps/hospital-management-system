@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>修改页面</title>
+    <link href="../../component/pear/css/pear.css" rel="stylesheet"/>
+</head>
+<body>
+<form action="" class="layui-form" lay-filter="layItem">
+    <div class="mainBox">
+        <div class="main-container">
+            <div class="layui-form-item">
+                <label class="layui-form-label">医生编号</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" name="doctorNumber" lay-verify="required"
+                           placeholder="请输入医生编号"
+                           type="text">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" name="name" lay-verify="required"
+                           placeholder="请输入医生姓名"
+                           type="text">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">性别</label>
+                <div class="layui-input-block">
+                    <input name="gender" title="男" type="radio" value="0">
+                    <input name="gender" title="女" type="radio" value="1">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">年龄</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="number" name="age"
+                           placeholder="请输入年龄"
+                           type="text">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">电话</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="phone" name="phone"
+                           placeholder="请输入手机号"
+                           type="text">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">所属部门</label>
+                <div class="layui-input-block">
+                    <select lay-search name="departmentId">
+                        <option value="0">无</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">薪水</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="number" name="salary"
+                           placeholder="请输入薪水"
+                           type="text">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">入职时间</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" id="timeSelect" lay-verify="date|required"
+                           name="employmentDate"
+                           placeholder="请选择入职时间" type="text">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">个人介绍</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" name="notes"
+                           placeholder="请输入个人介绍"
+                           type="text">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="button-container">
+            <button class="pear-btn pear-btn-primary pear-btn-sm" lay-filter="user-save" lay-submit=""
+                    type="submit">
+                <i class="layui-icon layui-icon-ok"></i>
+                提交
+            </button>
+            <button class="pear-btn pear-btn-sm" type="reset">
+                <i class="layui-icon layui-icon-refresh"></i>
+                重置
+            </button>
+        </div>
+    </div>
+</form>
+
+<!--时间戳转换-->
+<script id="doctor-employmentDate" type="text/html">
+    {{layui.util.toDateString(d.employmentDate, 'yyyy-MM-dd')}}
+</script>
+
+<script src="../../component/layui/layui.js"></script>
+<script src="../../component/pear/pear.js"></script>
+<script>
+    layui.use(['form', 'jquery', 'upload', 'laydate'], function () {
+        let form = layui.form;
+        let $ = layui.jquery;
+        let laydate = layui.laydate;
+        laydate.render({
+            elem: '#timeSelect'
+            , trigger: 'click'
+        });
+
+        function getQueryVariable(variable) {
+            let query = window.location.search.substring(1);
+            let vars = query.split("&");
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split("=");
+                if (pair[0] == variable) {
+                    return pair[1];
+                }
+            }
+            return null;
+        }
+
+        let id = getQueryVariable("id");
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = ('0' + (date.getMonth() + 1)).slice(-2);
+            const day = ('0' + date.getDate()).slice(-2);
+            return `${year}-${month}-${day}`;
+        }
+
+
+        //回显数据
+        var department;
+        $.ajax({
+            url: `http://localhost:${myPort}/doctor/find?id=` + id,
+            method: "GET",
+            success: function (obj) {
+                let data = obj.data;
+                //layui表单赋值回显
+                form.val("layItem", {
+                    doctorNumber: data.doctorNumber,
+                    name: data.name,
+                    gender: data.gender,
+                    age: data.age,
+                    employmentDate: formatDate(new Date(data.employmentDate)),
+                    phone: data.phone,
+                    salary: data.salary,
+                    notes: data.notes
+                });
+                // 显示部门
+                $.ajax({
+                    url: `http://localhost:${myPort}/department/list?limit=1000`,
+                    dataType: 'json',
+                    type: 'get',
+                    success: function (d) {
+                        let departmentData = d.data;
+                        $.each(departmentData, function (index, item) {
+                            //往下拉菜单里添加元素
+                            if (item.id === data.departmentId) {
+                                $("select[name='departmentId']").append(new Option(item.departmentNum + " - " + item.departmentName, item.id, true, true));
+                            } else {
+                                $("select[name='departmentId']").append(new Option(item.departmentNum + " - " + item.departmentName, item.id));
+                            }
+                        });
+                        form.render("select"); //重新渲染 固定写法
+                    }
+                });
+            }
+        });
+
+        form.on('submit(user-save)', function (data) {
+            data.field.id = id;
+            $.ajax({
+                url: `http://localhost:${myPort}/doctor/update`,
+                data: data.field,
+                dataType: 'json',
+                type: 'post',
+                success: function (result) {
+                    if (result.code === 0) {
+                        layer.msg(result.msg, {
+                            icon: 1,
+                            time: 1000
+                        }, function () {
+                            parent.layer.close(parent.layer.getFrameIndex(window
+                                .name)); //关闭当前页
+                            parent.layui.table.reload("doctor-table");
+                        });
+                    } else {
+                        layer.msg(result.msg, {
+                            icon: 2,
+                            time: 1000
+                        });
+                    }
+                }
+            })
+            return false;
+        });
+    })
+</script>
+<script>
+</script>
+</body>
+</html>

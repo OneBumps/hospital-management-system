@@ -1,0 +1,116 @@
+[
+  {
+    "id": 10,
+    "title": "首页",
+    "icon": "layui-icon layui-icon-console",
+    "type": 1,
+    "href": "view/console/hospital_console.html"
+  },
+  {
+    "id": 2,
+    "title": "人员管理",
+    "icon": "layui-icon layui-icon-console",
+    "type": 0,
+    "href": "",
+    "children": [
+      {
+        "id": 21,
+        "title": "部门管理",
+        "icon": "layui-icon layui-icon-face-smile",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "view/department/department.html"
+      },
+      {
+        "id": 22,
+        "title": "管理员控制",
+        "icon": "layui-icon layui-icon-console",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "view/management/management.html"
+      },
+      {
+        "id": 23,
+        "title": "医生管理",
+        "icon": "layui-icon layui-icon-console",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "view/doctor/doctor.html"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "材料管理",
+    "icon": "layui-icon layui-icon-console",
+    "type": 0,
+    "href": "",
+    "children": [
+      {
+        "id": 31,
+        "title": "器材管理",
+        "icon": "layui-icon layui-icon-console",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "view/instrument/instrument.html"
+      },
+      {
+        "id": 32,
+        "title": "药品管理",
+        "icon": "layui-icon layui-icon-face-smile",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "view/drug/drug.html"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "病人管理",
+    "icon": "layui-icon layui-icon-console",
+    "type": 0,
+    "href": "",
+    "children": [
+      {
+        "id": 41,
+        "title": "病人医生管理",
+        "icon": "layui-icon layui-icon-console",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "view/patient/patient.html"
+      },
+      {
+        "id": 42,
+        "title": "病人信息管理",
+        "icon": "layui-icon layui-icon-console",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "view/message/message.html"
+      },
+      {
+        "id": 43,
+        "title": "病人病情管理",
+        "icon": "layui-icon layui-icon-console",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "view/state/state.html"
+      },
+      {
+        "id": 44,
+        "title": "病人病房管理",
+        "icon": "layui-icon layui-icon-console",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "view/room/room.html"
+      },
+      {
+        "id": 45,
+        "title": "病人病床管理",
+        "icon": "layui-icon layui-icon-console",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "view/bed/bed.html"
+      }
+    ]
+  }
+]

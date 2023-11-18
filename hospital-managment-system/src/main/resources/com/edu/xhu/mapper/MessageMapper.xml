@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.xhu.mapper.MessageMapper">
+    <!--插入-->
+    <!--id写对应接口名称-->
+    <!--parameterType 输入参数的类型-->
+
+    <insert id="insertMessage" parameterType="com.edu.xhu.pojo.entity.Message">
+        insert into message(name,allergic,state,age,married,phone_num,sex,id_num)
+            values
+        (#{name},#{allergic},#{state},#{age},#{married},#{phoneNum},#{sex},#{idNum})
+    </insert>
+
+    <select id="findMessageById" parameterType="Long" resultType="com.edu.xhu.pojo.entity.Message">
+        select id,name,allergic,state,age,married,phone_num,sex,id_num
+            from message where id=#{id}
+    </select>
+
+    <select id="findAll" resultType="com.edu.xhu.pojo.entity.Message">
+        select id,name,allergic,state,age,married,phone_num,sex,id_num
+            from message
+    </select>
+
+    <delete id="deleteMessageById" parameterType="Long" >
+        delete from message where id=#{id}
+    </delete>
+
+    <update id="updateMessage" parameterType="com.edu.xhu.pojo.entity.Message">
+        update message set
+            name=#{name},allergic=#{allergic},state=#{state},age=#{age},married=#{married},phone_num=#{phoneNum},sex=#{sex},id_num=#{idNum}
+        where id=#{id}
+    </update>
+
+    <select id="findMessageByPage" parameterType="com.edu.xhu.pojo.dao.dto.MessageQueryDto" resultType="com.edu.xhu.pojo.entity.Message">
+        select
+            id,name,allergic,state,age,married,phone_num,sex,id_num
+        from
+            message
+
+        <where>
+
+            <if test="name!=null and name!=''">
+                name like '%${name}%'
+            </if>
+            <if test="phoneNum!=null and phoneNum!=''">
+                and phone_num like '%${phoneNum}%'
+            </if>
+            <if test="idNum!=null and idNum!=''">
+                and id_num like '%${idNum}%'
+            </if>
+
+        </where>
+        limit #{startIndex},#{limit}
+
+    </select>
+
+    <select id="findMessageByPageCount" parameterType="com.edu.xhu.pojo.dao.dto.MessageQueryDto" resultType="Long">
+        select
+        count(*)
+        from
+        message
+
+        <where>
+
+            <if test="name!=null and name!=''">
+                name like '%${name}%'
+            </if>
+            <if test="phoneNum!=null and phoneNum!=''">
+                and phone_num like '%${phoneNum}%'
+            </if>
+            <if test="idNum!=null and idNum!=''">
+                and id_num like '%${idNum}%'
+            </if>
+
+        </where>
+
+    </select>
+
+</mapper>

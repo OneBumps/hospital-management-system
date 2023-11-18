@@ -1,0 +1,37 @@
+{
+  "code": 0,
+  "msg": "请求成功!",
+  "count": 1,
+  "data": [
+    {
+      "id": 1,
+      "departmentNum": "1",
+      "departmentName": "技术部1"
+    },
+    {
+      "id": 2,
+      "departmentNum": "2",
+      "departmentName": "技术部2"
+    },
+    {
+      "id": 3,
+      "departmentNum": "3",
+      "departmentName": "技术部3"
+    },
+    {
+      "id": 4,
+      "departmentNum": "4",
+      "departmentName": "技术部4"
+    },
+    {
+      "id": 5,
+      "departmentNum": "5",
+      "departmentName": "技术部5"
+    },
+    {
+      "id": 6,
+      "departmentNum": "6",
+      "departmentName": "技术部6"
+    }
+  ]
+}

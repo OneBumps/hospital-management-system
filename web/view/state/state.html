@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>病人管理</title>
+		<link href="../../component/pear/css/pear.css" rel="stylesheet" />
+	</head>
+	<body class="pear-container">
+	<div class="layui-card">
+		<div class="layui-card-body">
+			<form class="layui-form" action="">
+				<div class="layui-form-item">
+					<div class="layui-form-item layui-inline">
+						<label class="layui-form-label">病人姓名</label>
+						<div class="layui-input-inline">
+							<input type="text" name="name" placeholder="" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item layui-inline">
+						<label class="layui-form-label">病人状态</label>
+						<div class="layui-input-block">
+							<select name="now" >
+								<option value=""></option>
+								<option value="0">未出院</option>
+								<option value="1">出院</option>
+							</select>
+						</div>
+					</div>
+
+
+					<div class="layui-form-item layui-inline">
+						<button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="state-query">
+							<i class="layui-icon layui-icon-search"></i>
+							查询
+						</button>
+						<button type="reset" class="pear-btn pear-btn-md">
+							<i class="layui-icon layui-icon-refresh"></i>
+							重置
+						</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<table id="state-table" lay-filter="state-table"></table>
+			</div>
+		</div>
+		
+		<script type="text/html" id="role-toolbar">
+			<button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
+				<i class="layui-icon layui-icon-add-1"></i>
+				新增
+			</button>
+			<button class="pear-btn pear-btn-danger pear-btn-md" lay-event="batchRemove">
+				<i class="layui-icon layui-icon-delete"></i>
+				删除
+			</button>
+		</script>
+		
+		<script type="text/html" id="role-bar">
+			<button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>
+			<button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
+		</script>
+		
+		<script type="text/html" id="role-enable">
+			<input type="checkbox" name="enable" value="{{d.id}}" lay-skin="switch" lay-text="上架|下架" lay-filter="user-enable" checked = "{{ d.id == 10003 ? 'true' : 'false' }}">
+		</script>
+
+		<script src="../../component/layui/layui.js"></script>
+		<script src="../../component/pear/pear.js"></script>
+		<script>
+		    layui.use(['table','form','jquery','laydate'],function () {
+		        let table = layui.table;
+		        let form = layui.form;
+		        let $ = layui.jquery;
+		
+		        let MODULE_PATH = "./state/";
+		
+		        let cols = [
+		            [
+		                {type:'checkbox'},
+                        {title: 'ID', field: 'id', align:'center', width:100},
+		                {title: '病人姓名', field: 'name', align:'center', width:100},
+						{title: '目前状态', field: 'now', align:'center',templet : function(d) {
+								let p = d.now;
+								if (p == 0) {
+									return '未出院'
+								} else if (p == 1) {
+									return '出院'}
+								else{
+									return '未填写'
+								}
+							}
+						},
+						{title: '生活方式', field: 'live', align:'center'},
+						{title: '服药依从性', field: 'medication', align:'center'},
+						{title: '不良反应', field: 'unEffect', align:'center',templet : function(d) {
+								let p = d.unEffect;
+								if (p == 0) {
+									return '无不良反应'
+								} else if (p == 1) {
+									return '副作用'}
+								else if (p == 2) {
+									return '毒性反应'}
+								else if (p == 3) {
+									return '变态反应'}
+								else if (p == 4) {
+									return '继发反应'}
+								else{
+									return '未填写'
+								}
+							}
+						},
+						{title: '睡眠时间', field: 'sleep', align:'center'},
+		                {title: '操作', toolbar: '#role-bar', align:'center', width:195}
+		            ]
+		        ]
+		
+		        table.render({
+		            elem: '#state-table',
+		            url: `http://localhost:${myPort}/state/list`,
+		            page: true ,
+		            cols: cols ,
+		            skin: 'patient',
+		            toolbar: '#role-toolbar',
+		            defaultToolbar: [{
+		                layEvent: 'refresh',
+		                icon: 'layui-icon-refresh',
+		            }, 'filter', 'print', 'exports']
+		        });
+		
+		        table.on('tool(state-table)', function(obj){
+		            if(obj.event === 'remove'){
+		                window.remove(obj);
+		            } else if(obj.event === 'edit'){
+		                window.edit(obj);
+		            } else if(obj.event === 'power'){
+		                window.power(obj);
+		            }
+		        });
+		
+		        table.on('toolbar(state-table)', function(obj){
+		            if(obj.event === 'add'){
+		                window.add();
+		            } else if(obj.event === 'refresh'){
+		                window.refresh();
+		            } else if(obj.event === 'batchRemove'){
+		                window.batchRemove(obj);
+		            }
+		        });
+		
+		        form.on('submit(state-query)', function(data){
+		            table.reload('state-table',{where:data.field})
+		            return false;
+		        });
+		
+		        form.on('switch(role-enable)', function(obj){
+		            layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
+		        });
+		
+		        window.add = function(){
+		            layer.open({
+		                type: 2,
+		                title: '新增',
+		                shade: 0.1,
+                        maxmin: true,
+		                area: ['600px', '500px'],
+		                content: MODULE_PATH + 'add.html'
+		            });
+		        }
+		
+
+		        window.edit = function(obj){
+		            layer.open({
+		                type: 2,
+		                title: '修改',
+		                shade: 0.1,
+		                area: ['600px', '500px'],
+                        content: MODULE_PATH +'edit.html?id='+obj.data.id
+		            });
+		        }
+		
+		        window.remove = function(obj){
+		            layer.confirm('确定要删除该病人吗?', {icon: 3, title:'提示'}, function(index){
+		                layer.close(index);
+		                let loading = layer.load();
+		                $.ajax({
+		                    url: `http://localhost:${myPort}/state/delete`,
+							data:{
+		                        id:obj.data['id']
+							},
+		                    success:function(result){
+		                        layer.close(loading);
+		                        if(result.code==0){
+		                            layer.msg(result.msg,{icon:1,time:1000},function(){
+		                                obj.del();
+		                            });
+		                        }else{
+		                            layer.msg(result.msg,{icon:2,time:1000});
+		                        }
+		                    }
+		                })
+		            });
+		        }
+		
+		        window.batchRemove = function(obj){
+		            let data = table.checkStatus(obj.config.id).data;
+		            if(data.length === 0){
+		                layer.msg("未选中数据",{icon:3,time:1000});
+		                return false;
+		            }
+		            let ids = "";
+		            for(let i = 0;i<data.length;i++){
+		                ids += data[i].userId+",";
+		            }
+		            ids = ids.substr(0,ids.length-1);
+		            layer.confirm('确定要删除这些病人？', {icon: 3, title:'提示'}, function(index){
+		                layer.close(index);
+		                let loading = layer.load();
+		                $.ajax({
+		                    url: MODULE_PATH+"deleteAll/"+ids,
+		                    dataType:'json',
+		                    type:'delete',
+		                    success:function(result){
+		                        layer.close(loading);
+		                        if(result.success){
+		                            layer.msg(result.msg,{icon:1,time:1000},function(){
+		                                table.reload('state-table');
+		                            });
+		                        }else{
+		                            layer.msg(result.msg,{icon:2,time:1000});
+		                        }
+		                    }
+		                })
+		            });
+		        }
+		
+		        window.refresh = function(){
+		            table.reload('state-table');
+		        }
+		    })
+		</script>
+	</body>
+</html>

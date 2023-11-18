@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.xhu.mapper.PatientMapper">
+    <!--插入-->
+    <!--id写对应接口名称-->
+    <!--parameterType 输入参数的类型-->
+
+    <insert id="insertPatient" parameterType="com.edu.xhu.pojo.entity.Patient">
+        insert into patient(name,time,office,conditions,doctor_num,room,bed,doctor_name)
+        values(#{name},#{time},#{office},#{conditions},#{doctorNum},#{room},#{bed},#{doctorName})
+    </insert>
+    <delete id="deletePatientById" parameterType="Long">
+        delete from patient where id=#{id};
+    </delete>
+    <update id="updatePatient" parameterType="com.edu.xhu.pojo.entity.Patient">
+        update patient set
+            name=#{name},time=#{time},office=#{office},conditions=#{conditions},doctor_num=#{doctorNum},room=#{room},bed=#{bed},doctor_name=#{doctorName}
+        where id=#{id};
+    </update>
+    <select id="findAll" resultType="com.edu.xhu.pojo.entity.Patient">
+        select id,name,time,office,conditions,doctor_num,room,bed,doctor_name from patient;
+    </select>
+    <select id="findPatientById" parameterType="Long" resultType="com.edu.xhu.pojo.entity.Patient">
+        select id,name,time,office,conditions,doctor_num,room,bed,doctor_name from patient where id=#{id};
+    </select>
+
+    <select id="findPatientByPage" parameterType="com.edu.xhu.pojo.dao.dto.PatientQueryDto" resultType="com.edu.xhu.pojo.entity.Patient">
+    select
+        id,name,time,office,conditions,doctor_num,room,bed,doctor_name
+    from
+        patient
+
+    <where>
+
+        <if test="name!=null and name!=''">
+            name like '%${name}%'
+        </if>
+        <if test="doctorNum!=null and doctorNum!=''">
+            and doctor_num like '%${doctorNum}%'
+        </if>
+        <if test="doctorName!=null and doctorName!=''">
+            and doctor_name like '%${doctorName}%'
+        </if>
+
+    </where>
+        limit #{startIndex},#{limit}
+
+    </select>
+
+    <select id="findPatientByPageCount" parameterType="com.edu.xhu.pojo.dao.dto.PatientQueryDto" resultType="Long">
+        select
+            count(*)
+        from
+            patient
+        <where>
+
+            <if test="name!=null and name!=''">
+                name like '%${name}%'
+            </if>
+            <if test="doctorNum!=null and doctorNum!=''">
+                and doctor_num like '%${doctorNum}%'
+            </if>
+            <if test="doctorName!=null and doctorName!=''">
+                and doctor_name like '%${doctorName}%'
+            </if>
+
+        </where>
+
+    </select>
+
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace一般定义为 包名+类名 -->
+<mapper namespace="com.edu.xhu.mapper.DeptMapper">
+
+    <!--查询全部部门-->
+    <select id="findDeptAll" resultType="com.edu.xhu.pojo.entity.Department">
+        select id,department_num,department_name,location,phone_number,email,opening_hours
+        from department;
+    </select>
+
+    <!--插入-->
+    <insert id="insertDept" parameterType="com.edu.xhu.pojo.entity.Department">
+        insert into department(department_num,department_name,location,phone_number,email,opening_hours)
+        values(#{departmentNum},#{departmentName},#{location},#{phoneNumber},#{email},#{openingHours})
+    </insert>
+
+    <!--通过id删除部门-->
+    <delete id="deleteLineById" parameterType="Long">
+        delete from department where id = #{id};
+    </delete>
+
+    <!--根据id查询部门-->
+    <select id="findDeptById" resultType="com.edu.xhu.pojo.entity.Department">
+        select id,department_num,department_name,location,phone_number,email,opening_hours
+        from department where id=#{id};
+    </select>
+
+    <!--修改部门-->
+    <update id="updateDept" parameterType="com.edu.xhu.pojo.entity.Department">
+        update department set department_num=#{departmentNum},department_name=#{departmentName}
+        ,location=#{location},phone_number=#{phoneNumber},email=#{email},opening_hours=#{openingHours}
+        where id =#{id};
+
+    </update>
+
+    <!--分页查询数据-->
+    <!--
+    '%${name}%' 模糊查询时，本身语句就有''
+    若使用#{}，则多了一对单引号 （#）自动补单引号
+    -->
+    <select id="findDeptByPage" parameterType="com.edu.xhu.pojo.dao.dto.DeptQueryDto" resultType="com.edu.xhu.pojo.entity.Department">
+        SELECT
+        *
+        FROM
+        department
+        <where>
+            <if test="departmentName!=null and departmentName!=''">
+                and department_name LIKE '%${departmentName}%'
+            </if>
+        </where>
+        LIMIT #{startIndex},#{limit}
+    </select>
+
+    <!--if标签 动态sql 判断是否符合条件  符合再加上对应的sql-->
+    <select id="findDeptByPageCount" parameterType="com.edu.xhu.pojo.dao.dto.DeptQueryDto" resultType="long">
+        SELECT
+        count(*)
+        FROM
+        department
+        <where>
+            <if test="departmentName!=null and departmentName!=''">
+                and department_name LIKE '%${departmentName}%'
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

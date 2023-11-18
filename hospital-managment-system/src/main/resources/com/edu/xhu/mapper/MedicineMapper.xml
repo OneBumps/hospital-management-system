@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.xhu.mapper.MedicineMapper">
+    <resultMap id="MedicineMap" type="com.edu.xhu.pojo.entity.Medicine">
+    </resultMap>
+    <insert id="insert" parameterType="com.edu.xhu.pojo.entity.Medicine">
+        INSERT INTO medicine (drug_name,brand,prescription,usage_method,drug_date) VALUE (#{drugname}, #{brand}, #{prescription}, #{usagemethod}, #{drugdate})
+    </insert>
+
+    <select id="selectById" resultMap="MedicineMap">
+        select id,drug_name,brand,prescription,usage_method,drug_date
+        from medicine where id=#{id}
+    </select>
+
+    <select id="selectAll" resultType="com.edu.xhu.pojo.entity.Medicine">
+        select id,drug_name,brand,prescription,usage_method,drug_date
+        from medicine
+    </select>
+
+    <delete id="deleteById" parameterType="Long" >
+        delete from medicine where id=#{id}
+    </delete>
+
+    <update id="updateById" parameterType="com.edu.xhu.pojo.entity.Medicine">
+        update medicine set
+                            drug_name=#{drugname},brand=#{brand},prescription=#{prescription},usage_method=#{usagemethod},drug_date=#{drugdate}
+        where id=#{id}
+    </update>
+
+    <select id="findmedicineByPage" parameterType="com.edu.xhu.pojo.dao.dto.medicinedto" resultType="com.edu.xhu.pojo.entity.Medicine">
+        select id,drug_name,brand,prescription,usage_method,drug_date
+        from medicine
+        <where>
+            <if test="id!=null and id != ''">
+                id=#{id}
+            </if>
+        </where>
+        LIMIT #{startIndex},#{limit}
+        </select>
+
+    <select id="findmedicineByPageCount" parameterType="com.edu.xhu.pojo.dao.dto.medicinedto" resultType="Long">
+        select
+            count(*)
+        from medicine
+        <where>
+            <if test="id!=null and id != ''">
+                id=#{id}
+            </if>
+        </where>
+
+    </select>
+</mapper>

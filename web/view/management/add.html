@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>医生-新增页面</title>
+    <link href="../../component/pear/css/pear.css" rel="stylesheet"/>
+</head>
+<body>
+<form action="" class="layui-form">
+    <div class="mainBox">
+        <div class="main-container">
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" name="name" lay-verify="required"
+                           type="text">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">等级</label>
+                <div class="layui-input-block">
+                    <input checked name="grade" title="普通员工" type="radio" value="0">
+                    <input name="grade" title="管理员" type="radio" value="1">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">职责描述</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="description" name="description"
+                           type="text">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">启用状态</label>
+                <div class="layui-input-block">
+                    <input checked name="open" title="启用" type="radio" value="1">
+                    <input name="open" title="禁用" type="radio" value="0">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="button-container">
+            <button class="pear-btn pear-btn-primary pear-btn-sm" lay-filter="doctor-save" lay-submit=""
+                    type="submit">
+                <i class="layui-icon layui-icon-ok"></i>
+                提交
+            </button>
+            <button class="pear-btn pear-btn-sm" type="reset">
+                <i class="layui-icon layui-icon-refresh"></i>
+                重置
+            </button>
+        </div>
+    </div>
+</form>
+
+
+<script src="../../component/layui/layui.js"></script>
+<script src="../../component/pear/pear.js"></script>
+<script>
+    // 自动获取焦点
+    document.querySelector('input[name="name"]').focus();
+
+    layui.use(['form', 'jquery', 'laydate'], function () {
+        let form = layui.form;
+        let $ = layui.jquery;
+        let laydate = layui.laydate;
+
+        form.on('submit(doctor-save)', function (data) {
+            $.ajax({
+                url: `http://localhost:${myPort}/management/add`,
+                data: data.field,
+                dataType: 'json',
+                type: 'POST',
+                success: function (result) {
+                    if (result.code === 0) {
+                        layer.msg(result.msg, {
+                            icon: 1,
+                            time: 1000
+                        }, function () {
+                            parent.layer.close(parent.layer.getFrameIndex(window
+                                .name)); //关闭当前页
+                            parent.layui.table.reload("doctor-table");
+                        });
+                    } else {
+                        layer.msg(result.msg, {
+                            icon: 2,
+                            time: 1000
+                        });
+                    }
+                }
+            })
+            return false;
+        });
+    })
+</script>
+<script>
+</script>
+</body>
+</html>
